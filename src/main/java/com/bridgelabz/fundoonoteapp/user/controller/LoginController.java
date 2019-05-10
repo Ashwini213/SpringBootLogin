@@ -12,15 +12,14 @@ import com.bridgelabz.fundoonoteapp.user.service.UserService;
 @RestController
 
 public class LoginController {
-	
+
 	@Autowired
 	UserService userService;
-	
+
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String geteUserByLogin(@RequestBody User user) {
-		
-		System.out.println("Controller");	
+
 		return userService.login(user);
-		
-			}
+
+	}
 }
