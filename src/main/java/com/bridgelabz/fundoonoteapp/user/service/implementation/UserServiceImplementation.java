@@ -4,17 +4,21 @@ import java.math.BigInteger;
 import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.bridgelabz.fundoonoteapp.user.model.User;
+import com.bridgelabz.fundoonoteapp.user.repository.UserRepository;
+import com.bridgelabz.fundoonoteapp.user.service.UserService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
@@ -22,28 +26,25 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 
-import com.bridgelabz.fundoonoteapp.user.model.User;
-import com.bridgelabz.fundoonoteapp.user.repository.UserRepository;
-import com.bridgelabz.fundoonoteapp.user.service.UserService;
-
 @Service
 @Transactional
 public class UserServiceImplementation implements UserService {
-
+	HttpServletRequest request;
 	@Autowired
 	public UserRepository userRepository;
 
 	public String login(User user) {
 
 		String password = securePassword(user);
-		System.out.println("------>" + password);
-		System.out.println("**********" + user.getPassword());
+		System.out.println("secured" + password);
+		System.out.println("password" + user.getPassword());
 
 		List<User> list = userRepository.findByEmailAndPassword(user.getEmail(), password);
 		System.out.println("SIZE : " + list.size());
 
 		if (list.size() != 0) {
 			System.out.println("Sucessfull login");
+			// System.out.println("header :"+update(request, user));
 
 			return "Welcome " + list.get(0).getName() + "Jwt--->" + generateToken();
 		} else {
@@ -59,6 +60,7 @@ public class UserServiceImplementation implements UserService {
 	public User userReg(User user) {
 		user.setPassword(securePassword(user));
 		userRepository.save(user);
+
 		return user;
 
 	}
@@ -128,7 +130,8 @@ public class UserServiceImplementation implements UserService {
 
 		String token = Jwts.builder().setId(id).setIssuedAt(now).setNotBefore(now).setExpiration(exp)
 				.signWith(SignatureAlgorithm.HS256, base64SecretBytes).compact();
-
+		System.out.println("id issss*********" + id);
+		System.out.println("token header :");
 		return token;
 	}
 
@@ -139,20 +142,19 @@ public class UserServiceImplementation implements UserService {
 		System.out.println("Subject: " + claims.getSubject());
 		System.out.println("Issuer: " + claims.getIssuer());
 		System.out.println("Expiration: " + claims.getExpiration());
+		System.out.println("verified token is  ---------" + token);
 		return token;
 	}
 
-	// public String jwtToken(String secretKey, String subject) {
-	//
-	// long nowMillis = System.currentTimeMillis();
-	// Date now = new Date(nowMillis);
-	//
-	// JwtBuilder builder =
-	// Jwts.builder().setSubject(subject).setIssuedAt(now).signWith(SignatureAlgorithm.HS256,
-	// secretKey);
-	//
-	// return builder.compact();
-	// }
+	public String jwtToken(String subject, String id) {
+
+		long nowMillis = System.currentTimeMillis();
+		Date now = new Date(nowMillis);
+
+		JwtBuilder builder = Jwts.builder().setSubject(subject).setIssuedAt(now).signWith(SignatureAlgorithm.HS256, id);
+
+		return builder.compact();
+	}
 	//
 	// private static final Key secret =
 	// MacProvider.generateKey(SignatureAlgorithm.HS256);
@@ -174,88 +176,114 @@ public class UserServiceImplementation implements UserService {
 	//
 	// }
 
+	// @Override
+	// public User saveUser(User user) {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
+
+	// public class JJWTDemo {
+
+	// private static final String secret = "MySecrete";
+	//
+	// private String generateToken(){
+	// String id = UUID.randomUUID().toString().replace("-", "");
+	// Date now = new Date();
+	// Date exp = new Date(System.currentTimeMillis() + (1000*30)); // 30 seconds
+	//
+	// String token = Jwts.builder()
+	// .setId(id)
+	// .setIssuedAt(now)
+	// .setNotBefore(now)
+	// .setExpiration(exp)
+	// .signWith(SignatureAlgorithm.HS256, secret)
+	// .compact();
+	//
+	// return token;
+	// }
+
+	/*
+	 * private void verifyToken(String token){ Claims claims = Jwts.parser().
+	 * setSigningKey(DatatypeConverter.parseBase64Binary(apiKey.getSecret()))
+	 * .parseClaimsJws(token).getBody();
+	 * System.out.println("----------------------------"); System.out.println("ID: "
+	 * + claims.getId()); System.out.println("Subject: " + claims.getSubject());
+	 * System.out.println("Issuer: " + claims.getIssuer());
+	 * System.out.println("Expiration: " + claims.getExpiration()); }
+	 * 
+	 * public void main(String[] args) { System.out.println(generateToken()); String
+	 * token = generateToken(); verifyToken(token); } }
+	 */
+
+	// }
+
+	// private static final Key secret =
+	// MacProvider.generateKey(SignatureAlgorithm.HS256);
+	// private static final byte[] secretBytes = secret.getEncoded();
+	// private static final String base64SecretBytes =
+	// Base64.getEncoder().encodeToString(secretBytes);
+	//
+	//
+	// private String createJWT(String password) {
+	//
+	// // The JWT signature algorithm we will be using to sign the token
+	// SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+	//
+	// long nowMillis = System.currentTimeMillis();
+	// Date now = new Date(nowMillis);
+	//
+	// // We will sign our JWT with our ApiKey secret
+	// //byte[] apiKeySecretBytes =
+	// DatatypeConverter.parseBase64Binary(apiKey.getSecret());
+	// //Key signingKey = new SecretKeySpec(apiKeySecretBytes,
+	// signatureAlgorithm.getJcaName());
+	//
+	// // Let's set the JWT Claims
+	// @SuppressWarnings("deprecation")
+	// JwtBuilder builder =
+	// Jwts.builder().setSubject(password).setIssuedAt(now).signWith(SignatureAlgorithm.HS256,
+	// base64SecretBytes);
+	//
+	// // if it has been specified, let's add the expiration
+	//
+	// // Builds the JWT and serializes it to a compact, URL-safe string
+	// return builder.compact();
+	// }
+	//
+	// private void parseJWT(String jwt) {
+	//
+	// // This line will throw an exception if it is not a signed JWS (as expected)
+	// Claims claims =
+	// Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(apiKey.getSecret()))
+	// .parseClaimsJws(jwt).getBody();
+	// System.out.println("password: " + claims.getId());
+	//
+	// }
+	// }
 	@Override
-	public User saveUser(User user) {
+	public String addUser(User user) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	// @RequestMapping(value= "/update",method = RequestMethod.POST)
+	public String update(HttpServletRequest request, User user) {
+
+		String authHeader = request.getHeader("token");
+		System.out.println("authHeader is :" + authHeader);
+		System.out.println(token + "-------------------" + authHeader);
+		verifyToken(authHeader);
+		if (authHeader != null) {
+			User givenUser = new User();
+			givenUser.setId((int) user.getId());
+			givenUser.setName(user.getName());
+			givenUser.setEmail(user.getEmail());
+			givenUser.setPassword(securePassword(user));
+			givenUser.setPhonenumber(user.getPhonenumber());
+			userRepository.save(givenUser);
+
+		}
+		return authHeader;
+	}
+
 }
-
-// public class JJWTDemo {
-
-// private static final String secret = "MySecrete";
-//
-// private String generateToken(){
-// String id = UUID.randomUUID().toString().replace("-", "");
-// Date now = new Date();
-// Date exp = new Date(System.currentTimeMillis() + (1000*30)); // 30 seconds
-//
-// String token = Jwts.builder()
-// .setId(id)
-// .setIssuedAt(now)
-// .setNotBefore(now)
-// .setExpiration(exp)
-// .signWith(SignatureAlgorithm.HS256, secret)
-// .compact();
-//
-// return token;
-// }
-
-/*
- * private void verifyToken(String token){ Claims claims = Jwts.parser().
- * setSigningKey(DatatypeConverter.parseBase64Binary(apiKey.getSecret()))
- * .parseClaimsJws(token).getBody();
- * System.out.println("----------------------------"); System.out.println("ID: "
- * + claims.getId()); System.out.println("Subject: " + claims.getSubject());
- * System.out.println("Issuer: " + claims.getIssuer());
- * System.out.println("Expiration: " + claims.getExpiration()); }
- * 
- * public void main(String[] args) { System.out.println(generateToken()); String
- * token = generateToken(); verifyToken(token); } }
- */
-
-// }
-
-// private static final Key secret =
-// MacProvider.generateKey(SignatureAlgorithm.HS256);
-// private static final byte[] secretBytes = secret.getEncoded();
-// private static final String base64SecretBytes =
-// Base64.getEncoder().encodeToString(secretBytes);
-//
-//
-// private String createJWT(String password) {
-//
-// // The JWT signature algorithm we will be using to sign the token
-// SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-//
-// long nowMillis = System.currentTimeMillis();
-// Date now = new Date(nowMillis);
-//
-// // We will sign our JWT with our ApiKey secret
-// //byte[] apiKeySecretBytes =
-// DatatypeConverter.parseBase64Binary(apiKey.getSecret());
-// //Key signingKey = new SecretKeySpec(apiKeySecretBytes,
-// signatureAlgorithm.getJcaName());
-//
-// // Let's set the JWT Claims
-// @SuppressWarnings("deprecation")
-// JwtBuilder builder =
-// Jwts.builder().setSubject(password).setIssuedAt(now).signWith(SignatureAlgorithm.HS256,
-// base64SecretBytes);
-//
-// // if it has been specified, let's add the expiration
-//
-// // Builds the JWT and serializes it to a compact, URL-safe string
-// return builder.compact();
-// }
-//
-// private void parseJWT(String jwt) {
-//
-// // This line will throw an exception if it is not a signed JWS (as expected)
-// Claims claims =
-// Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(apiKey.getSecret()))
-// .parseClaimsJws(jwt).getBody();
-// System.out.println("password: " + claims.getId());
-//
-// }
-// }
