@@ -11,19 +11,16 @@ public interface UserService {
 
 	public User update(String token, User user);
 
-//	public User userRegistration(User user);
+	public User userRegistration(User user, HttpServletRequest request);
 
 	public String encryptedPassword(User user);
-
 
 	public boolean delete(String token);
 
 	public User getUserInfoByEmail(String email);
 
-	public String sendmail(User users,String urlPattern,String subject);
+	public String sendMail(User user, String url, String subject);
 
 	public Optional<User> findById(int id);
-
-	User userRegistration(User user, HttpServletRequest request);
 
 }

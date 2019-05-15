@@ -1,10 +1,7 @@
 package com.bridgelabz.fundoonoteapp.user.service;
 
-import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,26 +14,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.bridgelabz.fundoonoteapp.user.model.User;
 import com.bridgelabz.fundoonoteapp.user.repository.UserRepository;
-import com.bridgelabz.fundoonoteapp.util.NoteUtil;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.crypto.MacProvider;
+import com.bridgelabz.fundoonoteapp.util.JsonToken;
 
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
 	@Autowired
 	public UserRepository userRep;
+	// public Util noteUtil;
 
 	@Autowired
 	private JavaMailSender sender;
+	@Autowired
+	private JsonToken jsonToken;
 
 	String secretKey;
 	String subject;
@@ -50,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
 		if (userList.size() > 0 && userList != null) {
 			System.out.println("Sucessful login");
-			return NoteUtil.jwtToken(password, userList.get(0).getId());
+			return jsonToken.jwtToken(password, userList.get(0).getId());
 		} else
 			System.out.println("wrong Id or password");
 		return "wrong id or password";
@@ -58,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User update(String token, User user) {
-		int varifiedUserId = NoteUtil.tokenVerification(token);
+		int varifiedUserId = jsonToken.tokenVerification(token);
 
 		Optional<User> maybeUser = userRep.findById(varifiedUserId);
 		User presentUser = maybeUser.map(existingUser -> {
@@ -76,7 +69,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public boolean delete(String token) {
-		int varifiedUserId = NoteUtil.tokenVerification(token);
+		int varifiedUserId = jsonToken.tokenVerification(token);
 		Optional<User> maybeUser = userRep.findById(varifiedUserId);
 		return maybeUser.map(existingUser -> {
 			userRep.delete(existingUser);
@@ -93,9 +86,7 @@ public class UserServiceImpl implements UserService {
 		if (user1 != null) {
 			System.out.println("Sucessfull reg");
 			// Optional<User> maybeUser = userRep.findById(user.getId());
-
-			String tokenGen = NoteUtil.jwtToken("secretKey", user1.get().getId());
-
+			String tokenGen = jsonToken.jwtToken("secretKey", user1.get().getId());
 			User u = user1.get();
 			StringBuffer requestUrl = request.getRequestURL();
 			System.out.println(requestUrl);
@@ -104,7 +95,7 @@ public class UserServiceImpl implements UserService {
 			System.out.println(forgotPasswordUrl);
 			String subject = "User Activation";
 
-			String s = sendmail(u, forgotPasswordUrl, subject);
+			String s = sendMail(u, forgotPasswordUrl, subject);
 			// return "Mail Sent Successfully";
 			return u;
 
@@ -142,30 +133,55 @@ public class UserServiceImpl implements UserService {
 		return generatedPassword;
 
 	}
+	//
+	// private static final Key secret =
+	// MacProvider.generateKey(SignatureAlgorithm.HS256);
+	// private static final byte[] secretBytes = secret.getEncoded();
+	// private static final String base64SecretBytes =
+	// Base64.getEncoder().encodeToString(secretBytes);
+	//
+	// @Override
+	// public String jwtToken(String secretKey, int id) {
+	// long nowMillis = System.currentTimeMillis();
+	// Date now = new Date(nowMillis);
+	//
+	// JwtBuilder builder =
+	// Jwts.builder().setSubject(String.valueOf(id)).setIssuedAt(now)
+	// .signWith(SignatureAlgorithm.HS256, base64SecretBytes);
+	// System.out.println("jwt token :" + builder.compact());
+	// String token = builder.compact();
+	//
+	// return token;
+	// }
+	//
+	// @Override
+	// public int tokenVerification(String token) {
+	// // This line will throw an exception if it is not a signed JWS (as expected)
+	// if (StringUtils.isEmpty(token)) {
+	// }
+	// Claims claims =
+	// Jwts.parser().setSigningKey(base64SecretBytes).parseClaimsJws(token).getBody();
+	// System.out.println("ID******************: " + claims.getSubject());
+	// System.out.println("Id is varified :" + claims.getSubject());
+	//
+	// return Integer.parseInt(claims.getSubject());
+	// }
 
-	
 	@Override
 	public User getUserInfoByEmail(String email) {
 		return userRep.findByEmail(email);
 
 	}
 
-	public String sendmail(User user, String urlPattern, String subject) {
+	public String sendMail(User user, String urlPattern, String subject) {
 
 		MimeMessage message = sender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message);
 
-		// StringBuffer requestUrl = request.getRequestURL();
-		// System.out.println(requestUrl);
-		// String forgotPasswordUrl = requestUrl.substring(0,
-		// requestUrl.lastIndexOf("/"));
-		// forgotPasswordUrl = forgotPasswordUrl + "/urlPattern/" + "token=" + token;
-		// System.out.println(forgotPasswordUrl);
-
 		try {
 			helper.setTo(user.getEmail());
 			helper.setText(urlPattern);
-			helper.setSubject("Token Based Auth");
+			helper.setSubject(subject);
 		} catch (MessagingException e) {
 			e.printStackTrace();
 			return "Error while sending mail ..";

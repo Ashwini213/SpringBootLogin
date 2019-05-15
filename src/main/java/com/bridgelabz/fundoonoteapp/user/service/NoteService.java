@@ -2,22 +2,25 @@ package com.bridgelabz.fundoonoteapp.user.service;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.bridgelabz.fundoonoteapp.user.model.Lable;
 import com.bridgelabz.fundoonoteapp.user.model.Notes;
 
 public interface NoteService {
 
+	Notes updateNote(String header, Notes note);
 
-	public Notes noteCreate(Notes note, HttpServletRequest request);
+	Notes createNote(String header, Notes note);
 
-	public List<Notes> findById(int userId);
+	boolean deleteNote(String token, Notes note);
 
-	public Notes updateNote(Notes note,int noteId);
+	List<Notes> fetchNote(String header);
 
-	public String deleteNote(int noteId);
+	Lable createLable(String header, Lable lable);
 
-	public Notes getNoteInfo(int noteId);
+	Lable updateLable(String token, Lable lable);
 
-	public List<Notes> getAllNotes();
+	boolean deleteLable(String token, Lable lable);
+
+	List<Lable> fetchLable(String token);
+
 }

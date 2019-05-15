@@ -2,46 +2,82 @@ package com.bridgelabz.fundoonoteapp.user.model;
 
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Note")
+@Table(name = "note")
 public class Notes {
 
-	@Override
-	public String toString() {
-		return "Notes [noteid=" + noteid + ", id=" + id + ", title=" + title + ", description=" + description
-				+ ", createdTime=" + createdTime + ", updateTime=" + updateTime + ", isArchive=" + isArchive
-				+ ", isPinned=" + isPinned + ", inTrash=" + inTrash + "]";
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
 	@Id
-	private int noteid;
-	private int id;
+	@Column(name = "noteid")
+	private int noteId;
 	private String title;
-	private String description;
-	private Timestamp createdTime;
-	private Timestamp updateTime;
-	private Boolean isArchive;
-	private Boolean isPinned;
-	private Boolean inTrash;
+	private String discription;
+	private Timestamp creadtedtime;
+	private Timestamp updatetime;
+	private boolean isarchive;
+	private boolean ispinned;
+	private boolean intrash;
+	@Column(name = "id")
+	private int userId;
 
-	public int getNoteid() {
-		return noteid;
+	public int getNoteId() {
+		return noteId;
 	}
 
-	public void setNoteid(int noteid) {
-		this.noteid = noteid;
+	public void setNoteId(int noteId) {
+		this.noteId = noteId;
+	}
+
+	public Timestamp getCreadtedtime() {
+		return creadtedtime;
+	}
+
+	public void setCreadtedtime(Timestamp creadtedtime) {
+		this.creadtedtime = creadtedtime;
+	}
+
+	public Timestamp getUpdatetime() {
+		return updatetime;
+	}
+
+	public void setUpdatetime(Timestamp updatetime) {
+		this.updatetime = updatetime;
+	}
+
+	public boolean isIsarchive() {
+		return isarchive;
+	}
+
+	public void setIsarchive(boolean isarchive) {
+		this.isarchive = isarchive;
+	}
+
+	public boolean isIspinned() {
+		return ispinned;
+	}
+
+	public void setIspinned(boolean ispinned) {
+		this.ispinned = ispinned;
+	}
+
+	public boolean isIntrash() {
+		return intrash;
+	}
+
+	public void setIntrash(boolean intrash) {
+		this.intrash = intrash;
+	}
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
 	public String getTitle() {
@@ -52,53 +88,19 @@ public class Notes {
 		this.title = title;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getDiscription() {
+		return discription;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDiscription(String discription) {
+		this.discription = discription;
 	}
 
-	public Timestamp getCreatedTime() {
-		return createdTime;
+	@Override
+	public String toString() {
+		return "User [noteid=" + noteId + ", title=" + title + ", discription=" + discription + ", createdtime="
+				+ creadtedtime + ", updatetime=" + updatetime + ", isarchive=" + isarchive + ", ispinned=" + ispinned
+				+ ",intrash=" + intrash + "]";
 	}
 
-	public void setCreatedTime(Timestamp createdTime) {
-		this.createdTime = createdTime;
-	}
-
-	public Timestamp getUpdateTime() {
-		return updateTime;
-	}
-
-	public void setUpdateTime(Timestamp updateTime) {
-		this.updateTime = updateTime;
-	}
-
-	public Boolean getIsArchive() {
-		return isArchive;
-	}
-
-	public void setIsArchive(Boolean isArchive) {
-		this.isArchive = isArchive;
-	}
-
-	public Boolean getIsPinned() {
-		return isPinned;
-	}
-
-	public void setIsPinned(Boolean isPinned) {
-		this.isPinned = isPinned;
-	}
-
-	public Boolean getInTrash() {
-		return inTrash;
-	}
-
-	public void setInTrash(Boolean inTrash) {
-		this.inTrash = inTrash;
-	}
-
-	
 }

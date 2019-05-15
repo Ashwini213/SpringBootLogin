@@ -4,6 +4,7 @@ import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
 
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import io.jsonwebtoken.Claims;
@@ -12,12 +13,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 
-public class NoteUtil {
+@Service
+public class Util implements JsonToken {
+
 	private static final Key secret = MacProvider.generateKey(SignatureAlgorithm.HS256);
 	private static final byte[] secretBytes = secret.getEncoded();
 	private static final String base64SecretBytes = Base64.getEncoder().encodeToString(secretBytes);
 
-	public static String jwtToken(String secretKey, int id) {
+	public String jwtToken(String secretKey, int id) {
 		long nowMillis = System.currentTimeMillis();
 		Date now = new Date(nowMillis);
 
@@ -29,7 +32,7 @@ public class NoteUtil {
 		return token;
 	}
 
-	public static int tokenVerification(String token) {
+	public int tokenVerification(String token) {
 		// This line will throw an exception if it is not a signed JWS (as expected)
 		if (StringUtils.isEmpty(token)) {
 		}

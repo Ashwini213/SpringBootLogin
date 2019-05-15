@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.fundoonoteapp.user.model.User;
 import com.bridgelabz.fundoonoteapp.user.service.UserService;
-import com.bridgelabz.fundoonoteapp.util.NoteUtil;
+import com.bridgelabz.fundoonoteapp.util.JsonToken;
 
 @RestController
 public class LoginController {
 	@Autowired
 	UserService userService;
+	@Autowired
+	public JsonToken jsonToken;
 
 	@Autowired
 	private JavaMailSender sender;
@@ -35,7 +37,7 @@ public class LoginController {
 
 		try {
 			helper.setTo(user.getEmail());
-			// helper.setText("Greetings :)");
+			helper.setText("Greetings :)");
 			helper.setSubject("Mail From Spring Boot");
 		} catch (MessagingException e) {
 			e.printStackTrace();
@@ -46,7 +48,7 @@ public class LoginController {
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public String geteUserByLogin(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+	public String geteUserByLogin(@RequestBody User user, HttpServletRequest reuest, HttpServletResponse response) {
 
 		String token = userService.login(user);
 		response.setHeader("token", token);
@@ -75,7 +77,7 @@ public class LoginController {
 		User userInfo = userService.getUserInfoByEmail(user.getEmail());
 
 		if (userInfo != null) {
-			String token = NoteUtil.jwtToken("secretKey", userInfo.getId());
+			String token = jsonToken.jwtToken("secretKey", userInfo.getId());
 
 			StringBuffer requestUrl = request.getRequestURL();
 			System.out.println(requestUrl);
@@ -84,7 +86,7 @@ public class LoginController {
 			System.out.println(forgotPasswordUrl);
 			String subject = "FOR FORGOT PASSWORD";
 
-			userService.sendmail(userInfo, forgotPasswordUrl, subject);
+			userService.sendMail(userInfo, forgotPasswordUrl, subject);
 			return "Mail Sent Successfully";
 		} else
 			return "not sent";
@@ -92,8 +94,7 @@ public class LoginController {
 
 	@RequestMapping(value = "/resetpassword", method = RequestMethod.PUT)
 	public void resetPassword(@RequestBody User user, HttpServletRequest request) {
-		// User userInfo=userService.getUserInfoByEmail(user.getEmail());
-		int id = NoteUtil.tokenVerification(request.getHeader("token"));
+		int id = jsonToken.tokenVerification(request.getHeader("token"));
 
 		if (id != 0) {
 
@@ -110,7 +111,7 @@ public class LoginController {
 		User userInfo = userService.getUserInfoByEmail(user.getEmail());
 
 		if (userInfo != null) {
-			String token = NoteUtil.jwtToken("secretKey", userInfo.getId());
+			String token = jsonToken.jwtToken("secretKey", userInfo.getId());
 
 			StringBuffer requestUrl = request.getRequestURL();
 			System.out.println(requestUrl);
@@ -119,7 +120,7 @@ public class LoginController {
 			System.out.println(forgotPasswordUrl);
 			String subject = "Active Status";
 
-			userService.sendmail(userInfo, forgotPasswordUrl, subject);
+			userService.sendMail(userInfo, forgotPasswordUrl, subject);
 			return "Mail Sent Successfully" + userInfo;
 		} else
 			return "Not Sent";
@@ -127,8 +128,7 @@ public class LoginController {
 
 	@RequestMapping(value = "/activestatus", method = RequestMethod.PUT)
 	public void activestatus(HttpServletRequest request) {
-		// User userInfo=userService.getUserInfoByEmail(user.getEmail());
-		int id = NoteUtil.tokenVerification(request.getHeader("token"));
+		int id = jsonToken.tokenVerification(request.getHeader("token"));
 
 		if (id != 0) {
 
