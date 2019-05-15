@@ -1,6 +1,5 @@
 package com.bridgelabz.fundoonoteapp.user.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -8,33 +7,21 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "user")
 public class User {
+
 	@Id
-	@Column(name = "id")
 	private int id;
-
-	@Column(name = "name")
 	private String name;
-
-	@Column(name = "email")
 	private String email;
-
-	@Column(name = "password")
 	private String password;
-
-	@Column(name = "phonenumber")
 	private String phonenumber;
-
-	@Column(name = "activestatus")
-	private String status;
-
-	@Column(name = "image")
+	private String activestatus;
 	private String image;
 
 	public User() {
 		super();
 	}
 
-	public long getId() {
+	public int getId() {
 		return id;
 	}
 
@@ -74,12 +61,12 @@ public class User {
 		this.phonenumber = phonenumber;
 	}
 
-	public String getStatus() {
-		return status;
+	public String getActivestatus() {
+		return activestatus;
 	}
 
-	public void setStatus(String status) {
-		this.status = status;
+	public void setActivestatus(String activestatus) {
+		this.activestatus = activestatus;
 	}
 
 	public String getImage() {
@@ -93,7 +80,7 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", phonenumber="
-				+ phonenumber + ", status=" + status + ", image=" + image + "]";
+				+ phonenumber + ", activestatus=" + activestatus + ", image=" + image + "]";
 	}
 
 }

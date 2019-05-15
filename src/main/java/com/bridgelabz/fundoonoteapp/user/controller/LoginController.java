@@ -1,8 +1,11 @@
 package com.bridgelabz.fundoonoteapp.user.controller;
 
+import java.util.Optional;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,13 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.fundoonoteapp.user.model.User;
 import com.bridgelabz.fundoonoteapp.user.service.UserService;
+import com.bridgelabz.fundoonoteapp.util.NoteUtil;
 
 @RestController
-
 public class LoginController {
+	@Autowired
+	UserService userService;
+
 	@Autowired
 	private JavaMailSender sender;
 
+	// SEND EMAIL
 	@RequestMapping("/sendMail")
 	public String sendMail(@RequestBody User user) {
 		MimeMessage message = sender.createMimeMessage();
@@ -28,7 +35,7 @@ public class LoginController {
 
 		try {
 			helper.setTo(user.getEmail());
-			helper.setText("Greetings :)");
+			// helper.setText("Greetings :)");
 			helper.setSubject("Mail From Spring Boot");
 		} catch (MessagingException e) {
 			e.printStackTrace();
@@ -38,20 +45,97 @@ public class LoginController {
 		return "Mail Sent Success!";
 	}
 
-	@Autowired
-	UserService userService;
-
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public String geteUserByLogin(@RequestBody User user) {
+	public String geteUserByLogin(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
 
-		return userService.login(user);
+		String token = userService.login(user);
+		response.setHeader("token", token);
+
+		System.out.println("token is ********* :" + token);
+		return "user->" + token;
+	}
+
+	@RequestMapping(value = "/updateuser", method = RequestMethod.PUT)
+	public void updateuser(@RequestBody User user, HttpServletRequest request) {
+		System.out.println("I am  token at update method :" + request.getHeader("token"));
+		userService.update(request.getHeader("token"), user);
+	}
+
+	@RequestMapping(value = "/deleteuser", method = RequestMethod.DELETE)
+	public void deleteuser(HttpServletRequest request) {
+
+		System.out.println("I am  token at delete method :" + request.getHeader("token"));
+		boolean b = userService.delete(request.getHeader("token"));
+		System.out.println("-->" + b);
 
 	}
 
-	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public String update(HttpServletRequest request, User user) {
+	@RequestMapping(value = "/forgotpassword", method = RequestMethod.POST)
+	public String forgotpassword(@RequestBody User user, HttpServletRequest request) {
+		User userInfo = userService.getUserInfoByEmail(user.getEmail());
 
-		return userService.update(request, user);
+		if (userInfo != null) {
+			String token = NoteUtil.jwtToken("secretKey", userInfo.getId());
 
+			StringBuffer requestUrl = request.getRequestURL();
+			System.out.println(requestUrl);
+			String forgotPasswordUrl = requestUrl.substring(0, requestUrl.lastIndexOf("/"));
+			forgotPasswordUrl = forgotPasswordUrl + "/resetpassword/" + "token=" + token;
+			System.out.println(forgotPasswordUrl);
+			String subject = "FOR FORGOT PASSWORD";
+
+			userService.sendmail(userInfo, forgotPasswordUrl, subject);
+			return "Mail Sent Successfully";
+		} else
+			return "not sent";
+	}
+
+	@RequestMapping(value = "/resetpassword", method = RequestMethod.PUT)
+	public void resetPassword(@RequestBody User user, HttpServletRequest request) {
+		// User userInfo=userService.getUserInfoByEmail(user.getEmail());
+		int id = NoteUtil.tokenVerification(request.getHeader("token"));
+
+		if (id != 0) {
+
+			Optional<User> userinfo = userService.findById(id);
+			User usr = userinfo.get();
+			usr.setPassword(user.getPassword());
+			userService.update(request.getHeader("token"), usr);
+		}
+
+	}
+
+	@RequestMapping(value = "/sendtomail", method = RequestMethod.POST)
+	public String sendtomail(@RequestBody User user, HttpServletRequest request) {
+		User userInfo = userService.getUserInfoByEmail(user.getEmail());
+
+		if (userInfo != null) {
+			String token = NoteUtil.jwtToken("secretKey", userInfo.getId());
+
+			StringBuffer requestUrl = request.getRequestURL();
+			System.out.println(requestUrl);
+			String forgotPasswordUrl = requestUrl.substring(0, requestUrl.lastIndexOf("/"));
+			forgotPasswordUrl = forgotPasswordUrl + "/activestatus/" + "token=" + token;
+			System.out.println(forgotPasswordUrl);
+			String subject = "Active Status";
+
+			userService.sendmail(userInfo, forgotPasswordUrl, subject);
+			return "Mail Sent Successfully" + userInfo;
+		} else
+			return "Not Sent";
+	}
+
+	@RequestMapping(value = "/activestatus", method = RequestMethod.PUT)
+	public void activestatus(HttpServletRequest request) {
+		// User userInfo=userService.getUserInfoByEmail(user.getEmail());
+		int id = NoteUtil.tokenVerification(request.getHeader("token"));
+
+		if (id != 0) {
+
+			Optional<User> userinfo = userService.findById(id);
+			User usr = userinfo.get();
+			usr.setActivestatus("1");
+			userService.update(request.getHeader("token"), usr);
+		}
 	}
 }
