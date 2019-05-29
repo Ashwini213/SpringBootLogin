@@ -1,13 +1,12 @@
 package com.bridgelabz.fundoonoteapp.user.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "lable")
-public class Lable {
+public class Label {
 	@Id
 
 	private int lableId;

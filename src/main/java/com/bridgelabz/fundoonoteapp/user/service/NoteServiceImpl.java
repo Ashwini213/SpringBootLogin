@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoonoteapp.user.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,11 +9,11 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.bridgelabz.fundoonoteapp.user.model.Lable;
-import com.bridgelabz.fundoonoteapp.user.model.Notes;
-import com.bridgelabz.fundoonoteapp.user.repository.LableRepository;
+import com.bridgelabz.fundoonoteapp.user.model.Label;
+import com.bridgelabz.fundoonoteapp.user.model.Note;
+import com.bridgelabz.fundoonoteapp.user.repository.LabelRepository;
 import com.bridgelabz.fundoonoteapp.user.repository.NoteRepository;
-import com.bridgelabz.fundoonoteapp.util.JsonToken;
+import com.bridgelabz.fundoonoteapp.util.Util;
 
 @Service
 @Transactional
@@ -21,25 +22,26 @@ public class NoteServiceImpl implements NoteService {
 	@Autowired
 	public NoteRepository noteRep;
 	@Autowired
-	public LableRepository lableRepository;
-	@Autowired
-	public JsonToken jsonToken;
+	public LabelRepository labelRepository;
 
 	@Override
-	public Notes createNote(String token, Notes note) {
-		int varifiedUserId = jsonToken.tokenVerification(token);
-		System.out.println("note creation :" + varifiedUserId);
-		note.setUserId(varifiedUserId);
+	public Note createNote(String token, Note note) {
+		// int verifiedUserId = JsonUtil.tokenVerification(token);
+		System.out.println("note creation :" + Util.tokenVerification(token));
+
+		LocalDateTime creadtedTime = LocalDateTime.now();
+		note.setCreadtedTime(creadtedTime);
+		note.setUserId(Util.tokenVerification(token));
 		return noteRep.save(note);
 	}
 
 	@Override
-	public Notes updateNote(String token, Notes note) {
-		int varifiedUserId = jsonToken.tokenVerification(token);
-		System.out.println("varifiedUserId :" + varifiedUserId);
-		Optional<Notes> maybeNote = noteRep.findByUserIdAndNoteId(varifiedUserId, note.getNoteId());
+	public Note updateNote(String token, Note note) {
+		// int verifiedUserId = JsonUtil.tokenVerification(token);
+		System.out.println("varifiedUserId :" + Util.tokenVerification(token));
+		Optional<Note> maybeNote = noteRep.findByUserIdAndNoteId(Util.tokenVerification(token), note.getNoteId());
 		System.out.println("maybeNote :" + maybeNote);
-		Notes presentNote = maybeNote.map(existingNote -> {
+		Note presentNote = maybeNote.map(existingNote -> {
 			System.out.println("noteee here");
 			existingNote.setDiscription(
 					note.getDiscription() != null ? note.getDiscription() : maybeNote.get().getDiscription());
@@ -51,59 +53,57 @@ public class NoteServiceImpl implements NoteService {
 	}
 
 	@Override
-	public boolean deleteNote(String token, Notes note) {
-		int varifiedUserId = jsonToken.tokenVerification(token);
-		noteRep.deleteByUserIdAndNoteId(varifiedUserId, note.getNoteId());
+	public boolean deleteNote(String token, Note note) {
+		// int verifiedUserId = JsonUtil.tokenVerification(token);
+		noteRep.deleteByUserIdAndNoteId(Util.tokenVerification(token), note.getNoteId());
 		return true;
 	}
 
 	@Override
-	public List<Notes> fetchNote(String token) {
-		int varifiedUserId = jsonToken.tokenVerification(token);
-		System.out.println("i m in fetch :" + varifiedUserId);
+	public List<Note> getNotes(String token) {
 
-		List<Notes> notes = (List<Notes>) noteRep.findByUserId(varifiedUserId);
+		return noteRep.findByUserId(Util.tokenVerification(token));
 
-		return notes;
 	}
 
 	@Override
-	public Lable createLable(String token, Lable lable) {
-		int varifiedUserId = jsonToken.tokenVerification(token);
-		System.out.println("lable creation :" + varifiedUserId);
-		lable.setUserId(varifiedUserId);
-		return lableRepository.save(lable);
+	public Label createLabel(String token, Label label) {
+		// int verifiedUserId = JsonUtil.tokenVerification(token);
+		System.out.println("lable creation :" + Util.tokenVerification(token));
+		label.setUserId(Util.tokenVerification(token));
+		return labelRepository.save(label);
 	}
 
 	@Override
-	public Lable updateLable(String token, Lable lable) {
-		int varifiedUserId = jsonToken.tokenVerification(token);
-		System.out.println("varifiedUserId :" + varifiedUserId);
-		Optional<Lable> maybeLable = lableRepository.findByUserIdAndLableId(varifiedUserId, lable.getLableId());
+	public Label updateLabel(String token, Label label) throws CustomException {
+		// int verifiedUserId = JsonUtil.tokenVerification(token);
+		System.out.println("varifiedUserId :" + Util.tokenVerification(token));
+		Optional<Label> maybeLable = labelRepository.findByUserIdAndLableId(Util.tokenVerification(token),
+				label.getLableId());
 		System.out.println("maybeLable :" + maybeLable);
-		Lable presentNote = maybeLable.map(existingNote -> {
+		Label presentNote = maybeLable.map(existingNote -> {
 			System.out.println("noteee here");
 			existingNote.setLableName(
-					lable.getLableName() != null ? lable.getLableName() : maybeLable.get().getLableName());
+					label.getLableName() != null ? label.getLableName() : maybeLable.get().getLableName());
 			return existingNote;
-		}).orElseThrow(() -> new RuntimeException("Note Not Found"));
+		}).orElseThrow(() -> new CustomException("Note Not Found"));
 
-		return lableRepository.save(presentNote);
+		return labelRepository.save(presentNote);
 	}
 
 	@Override
-	public boolean deleteLable(String token, Lable lable) {
-		int varifiedUserId = jsonToken.tokenVerification(token);
-		lableRepository.deleteByUserIdAndLableId(varifiedUserId, lable.getLableId());
+	public boolean deleteLabel(String token, Label lable) {
+		// int verifiedUserId = JsonUtil.tokenVerification(token);
+		labelRepository.deleteByUserIdAndLableId(Util.tokenVerification(token), lable.getLableId());
 		return true;
 	}
 
 	@Override
-	public List<Lable> fetchLable(String token) {
-		int varifiedUserId = jsonToken.tokenVerification(token);
-		System.out.println("i m in fetch :" + varifiedUserId);
+	public List<Label> getLabels(String token) {
+		// int verifiedUserId = JsonUtil.tokenVerification(token);
+		System.out.println("i m in fetch :" + Util.tokenVerification(token));
 
-		List<Lable> lable = (List<Lable>) lableRepository.findByUserId(varifiedUserId);
+		List<Label> lable = labelRepository.findByUserId(Util.tokenVerification(token));
 
 		return lable;
 	}

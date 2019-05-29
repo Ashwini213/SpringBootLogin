@@ -1,6 +1,6 @@
 package com.bridgelabz.fundoonoteapp.user.model;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,20 +9,14 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "note")
-public class Notes {
+public class Note {
 
-	@Id
-	@Column(name = "noteid")
-	private int noteId;
-	private String title;
-	private String discription;
-	private Timestamp creadtedtime;
-	private Timestamp updatetime;
-	private boolean isarchive;
-	private boolean ispinned;
-	private boolean intrash;
-	@Column(name = "id")
-	private int userId;
+	@Override
+	public String toString() {
+		return "Note [noteId=" + noteId + ", title=" + title + ", discription=" + discription + ", creadtedTime="
+				+ creadtedTime + ", updateTime=" + updateTime + ", isarchive=" + isarchive + ", ispinned=" + ispinned
+				+ ", intrash=" + intrash + ", userId=" + userId + "]";
+	}
 
 	public int getNoteId() {
 		return noteId;
@@ -32,20 +26,33 @@ public class Notes {
 		this.noteId = noteId;
 	}
 
-	public Timestamp getCreadtedtime() {
-		return creadtedtime;
+	@Id
+	@Column(name = "id")
+	private int noteId;
+	private String title;
+	private String discription;
+	private LocalDateTime creadtedTime;
+	private LocalDateTime updateTime;
+	private boolean isarchive;
+	private boolean ispinned;
+	private boolean intrash;
+	@Column(name = "userId")
+	private int userId;
+
+	public LocalDateTime getCreadtedTime() {
+		return creadtedTime;
 	}
 
-	public void setCreadtedtime(Timestamp creadtedtime) {
-		this.creadtedtime = creadtedtime;
+	public void setCreadtedTime(LocalDateTime creadtedTime) {
+		this.creadtedTime = creadtedTime;
 	}
 
-	public Timestamp getUpdatetime() {
-		return updatetime;
+	public LocalDateTime getUpdateTime() {
+		return updateTime;
 	}
 
-	public void setUpdatetime(Timestamp updatetime) {
-		this.updatetime = updatetime;
+	public void setUpdateTime(LocalDateTime updateTime) {
+		this.updateTime = updateTime;
 	}
 
 	public boolean isIsarchive() {
@@ -94,13 +101,6 @@ public class Notes {
 
 	public void setDiscription(String discription) {
 		this.discription = discription;
-	}
-
-	@Override
-	public String toString() {
-		return "User [noteid=" + noteId + ", title=" + title + ", discription=" + discription + ", createdtime="
-				+ creadtedtime + ", updatetime=" + updatetime + ", isarchive=" + isarchive + ", ispinned=" + ispinned
-				+ ",intrash=" + intrash + "]";
 	}
 
 }

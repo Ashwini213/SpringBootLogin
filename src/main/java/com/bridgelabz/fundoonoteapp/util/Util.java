@@ -1,10 +1,11 @@
 package com.bridgelabz.fundoonoteapp.util;
 
 import java.security.Key;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Date;
 
-import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import io.jsonwebtoken.Claims;
@@ -13,14 +14,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.crypto.MacProvider;
 
-@Service
-public class Util implements JsonToken {
-
+public class Util {
 	private static final Key secret = MacProvider.generateKey(SignatureAlgorithm.HS256);
 	private static final byte[] secretBytes = secret.getEncoded();
 	private static final String base64SecretBytes = Base64.getEncoder().encodeToString(secretBytes);
 
-	public String jwtToken(String secretKey, int id) {
+	public static String jwtToken(String secretKey, int id) {
 		long nowMillis = System.currentTimeMillis();
 		Date now = new Date(nowMillis);
 
@@ -32,7 +31,7 @@ public class Util implements JsonToken {
 		return token;
 	}
 
-	public int tokenVerification(String token) {
+	public static int tokenVerification(String token) {
 		// This line will throw an exception if it is not a signed JWS (as expected)
 		if (StringUtils.isEmpty(token)) {
 		}
@@ -41,6 +40,26 @@ public class Util implements JsonToken {
 		System.out.println("Id is varified :" + claims.getSubject());
 
 		return Integer.parseInt(claims.getSubject());
+	}
+
+	public static String encryptedPassword(String password) {
+		String generatedPassword = null;
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(password.getBytes());
+			byte[] bytes = md.digest();
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < bytes.length; i++) {
+				sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+			}
+			generatedPassword = sb.toString();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		System.out.println("generated password :" + generatedPassword);
+
+		return generatedPassword;
+
 	}
 
 }

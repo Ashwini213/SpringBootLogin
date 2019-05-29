@@ -2,25 +2,25 @@ package com.bridgelabz.fundoonoteapp.user.service;
 
 import java.util.List;
 
-import com.bridgelabz.fundoonoteapp.user.model.Lable;
-import com.bridgelabz.fundoonoteapp.user.model.Notes;
+import com.bridgelabz.fundoonoteapp.user.model.Label;
+import com.bridgelabz.fundoonoteapp.user.model.Note;
 
 public interface NoteService {
 
-	Notes updateNote(String header, Notes note);
+	Note updateNote(String header, Note note);
 
-	Notes createNote(String header, Notes note);
+	Note createNote(String header, Note note);
 
-	boolean deleteNote(String token, Notes note);
+	boolean deleteNote(String token, Note note);
 
-	List<Notes> fetchNote(String header);
+	List<Note> getNotes(String header);
 
-	Lable createLable(String header, Lable lable);
+	Label createLabel(String header, Label lable);
 
-	Lable updateLable(String token, Lable lable);
+	Label updateLabel(String token, Label lable) throws CustomException;
 
-	boolean deleteLable(String token, Lable lable);
+	boolean deleteLabel(String token, Label lable);
 
-	List<Lable> fetchLable(String token);
-
+	List<Label> getLabels(String token);
+	
 }

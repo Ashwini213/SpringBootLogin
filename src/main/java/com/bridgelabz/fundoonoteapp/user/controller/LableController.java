@@ -5,49 +5,53 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bridgelabz.fundoonoteapp.user.model.Lable;
+import com.bridgelabz.fundoonoteapp.user.model.Label;
+import com.bridgelabz.fundoonoteapp.user.service.CustomException;
 import com.bridgelabz.fundoonoteapp.user.service.NoteService;
 
 @RestController
 public class LableController {
 	@Autowired
-	NoteService noteService;
+	private NoteService noteService;
 
 	// Create
-	@RequestMapping(value = "/createlable", method = RequestMethod.POST)
-	public Lable createlable(@RequestBody Lable lable, HttpServletRequest request) {
+	// @RequestMapping(value = "/createlable", method = RequestMethod.POST)
+	@PostMapping(value = "/label")
+	public Label createLabel(@RequestBody Label label, HttpServletRequest request) {
 
-		return noteService.createLable(request.getHeader("token"), lable);
+		return noteService.createLabel(request.getHeader("token"), label);
 	}
 
 	// update
+	@PutMapping(value = "/label")
+	// @RequestMapping(value = "/updateLable", method = RequestMethod.PUT)
+	public Label updateLabel(@RequestBody Label label, HttpServletRequest request) throws CustomException {
 
-	@RequestMapping(value = "/updateLable", method = RequestMethod.PUT)
-	public Lable updateLable(@RequestBody Lable lable, HttpServletRequest request) {
-
-		return noteService.updateLable(request.getHeader("token"), lable);
+		return noteService.updateLabel(request.getHeader("token"), label);
 	}
 
 	// delete
 
-	@RequestMapping(value = "/deletelable", method = RequestMethod.DELETE)
-	public void deletelable(@RequestBody Lable lable, HttpServletRequest request) {
+	// @RequestMapping(value = "/deletelable", method = RequestMethod.DELETE)
+	@DeleteMapping(value = "/label")
+	public void deleteLabel(@RequestBody Label label, HttpServletRequest request) {
 		System.out.println("I am token at delete method :" + request.getHeader("token"));
-		boolean deletelable = noteService.deleteLable(request.getHeader("token"), lable);
-
+	
 	}
 
 	// fetch
-
-	@RequestMapping(value = "/fetchlable", method = RequestMethod.GET)
-	public List<Lable> fetchlable(HttpServletRequest request) {
+	@GetMapping(value = "/label")
+	// @RequestMapping(value = "/fetchlable", method = RequestMethod.GET)
+	public List<Label> getLables(HttpServletRequest request) {
 		System.out.println("I am token at get method :" + request.getHeader("token"));
-		return noteService.fetchLable(request.getHeader("token"));
+		return noteService.getLabels(request.getHeader("token"));
 
 	}
 

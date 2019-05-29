@@ -11,14 +11,14 @@ import com.bridgelabz.fundoonoteapp.user.model.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
 
-	List<User> findByIdAndPassword(int id, String password);
-
-	Optional<User> findAllById(int id);
+	Optional<User> findByEmailAndPassword(String email, String password);
 
 	Optional<User> findById(int id);
 
-	boolean deleteById(int varifiedUserId);
+	boolean deleteById(int verifiedUserId);
 
 	User findByEmail(String email);
+
+	public List<User> findAll();
 
 }
