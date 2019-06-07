@@ -10,9 +10,11 @@ import com.bridgelabz.fundoonoteapp.user.model.Note;
 
 
 @Repository
-public interface NoteRepository extends JpaRepository<Note, Integer> {
+public interface NoteRepository extends JpaRepository<Note, Long> {
 
 	Optional<Note> findByUserIdAndNoteId(int varifiedUserId, int noteid);
+	public List<Note> findByNoteIdAndUserId(int noteId,int userId);
+
 
 	void deleteByUserIdAndNoteId(int varifiedUserId, int noteId);
 

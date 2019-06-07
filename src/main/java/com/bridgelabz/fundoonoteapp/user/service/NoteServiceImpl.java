@@ -1,6 +1,5 @@
 package com.bridgelabz.fundoonoteapp.user.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,13 +25,17 @@ public class NoteServiceImpl implements NoteService {
 
 	@Override
 	public Note createNote(String token, Note note) {
-		// int verifiedUserId = JsonUtil.tokenVerification(token);
-		System.out.println("note creation :" + Util.tokenVerification(token));
-
-		LocalDateTime creadtedTime = LocalDateTime.now();
-		note.setCreadtedTime(creadtedTime);
-		note.setUserId(Util.tokenVerification(token));
+		// System.out.println("note creation :" + Util.tokenVerification(token));
+		//
+		// LocalDateTime creadtedTime = LocalDateTime.now();
+		// note.setCreadtedTime(creadtedTime);
+		// note.setUserId(Util.tokenVerification(token));
+		// return noteRep.save(note);
+		int verifiedUserId = Util.tokenVerification(token);
+		System.out.println("note creation :" + verifiedUserId);
+		note.setUserId(verifiedUserId);
 		return noteRep.save(note);
+
 	}
 
 	@Override
@@ -53,12 +56,18 @@ public class NoteServiceImpl implements NoteService {
 	}
 
 	@Override
-	public boolean deleteNote(String token, Note note) {
+	public String deleteNote(String token, Note note) {
 		// int verifiedUserId = JsonUtil.tokenVerification(token);
 		noteRep.deleteByUserIdAndNoteId(Util.tokenVerification(token), note.getNoteId());
-		return true;
+		return "Deleted";
 	}
 
+	/*
+	 * @Override public String deleteNote(int noteId, String token) { int userId =
+	 * Util.tokenVerification(token); List<Note> noteInfo =
+	 * noteRep.findByNoteIdAndUserId(noteId, userId);
+	 * noteRep.delete(noteInfo.get(0)); return "Deleted"; }
+	 */
 	@Override
 	public List<Note> getNotes(String token) {
 
@@ -75,7 +84,7 @@ public class NoteServiceImpl implements NoteService {
 	}
 
 	@Override
-	public Label updateLabel(String token, Label label) throws CustomException {
+	public Label updateLabel(String token, Label label) {
 		// int verifiedUserId = JsonUtil.tokenVerification(token);
 		System.out.println("varifiedUserId :" + Util.tokenVerification(token));
 		Optional<Label> maybeLable = labelRepository.findByUserIdAndLableId(Util.tokenVerification(token),
@@ -86,7 +95,7 @@ public class NoteServiceImpl implements NoteService {
 			existingNote.setLableName(
 					label.getLableName() != null ? label.getLableName() : maybeLable.get().getLableName());
 			return existingNote;
-		}).orElseThrow(() -> new CustomException("Note Not Found"));
+		}).orElseThrow(() -> new RuntimeException("Note Not Found"));
 
 		return labelRepository.save(presentNote);
 	}
@@ -107,5 +116,9 @@ public class NoteServiceImpl implements NoteService {
 
 		return lable;
 	}
+
+	
+
+	
 
 }

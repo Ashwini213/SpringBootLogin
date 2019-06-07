@@ -62,7 +62,12 @@ public class LoginController {
 		String token=userService.login(Login);
 		
 		if(token!=null) {
+			System.out.println("hmmm->"+token);
 			response.setHeader("token", token);
+			response.addHeader("Access-control-Allow-Headers", "*");
+			response.addHeader("Access-control-Expose-Headers", "*");
+
+			
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
 		else

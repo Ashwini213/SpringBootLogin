@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -11,23 +13,8 @@ import javax.persistence.Table;
 @Table(name = "note")
 public class Note {
 
-	@Override
-	public String toString() {
-		return "Note [noteId=" + noteId + ", title=" + title + ", discription=" + discription + ", creadtedTime="
-				+ creadtedTime + ", updateTime=" + updateTime + ", isarchive=" + isarchive + ", ispinned=" + ispinned
-				+ ", intrash=" + intrash + ", userId=" + userId + "]";
-	}
-
-	public int getNoteId() {
-		return noteId;
-	}
-
-	public void setNoteId(int noteId) {
-		this.noteId = noteId;
-	}
-
 	@Id
-	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int noteId;
 	private String title;
 	private String discription;
@@ -38,6 +25,14 @@ public class Note {
 	private boolean intrash;
 	@Column(name = "userId")
 	private int userId;
+
+	public int getNoteId() {
+		return noteId;
+	}
+
+	public void setNoteId(int noteId) {
+		this.noteId = noteId;
+	}
 
 	public LocalDateTime getCreadtedTime() {
 		return creadtedTime;
@@ -101,6 +96,13 @@ public class Note {
 
 	public void setDiscription(String discription) {
 		this.discription = discription;
+	}
+
+	@Override
+	public String toString() {
+		return "Note [noteId=" + noteId + ", title=" + title + ", discription=" + discription + ", creadtedTime="
+				+ creadtedTime + ", updateTime=" + updateTime + ", isarchive=" + isarchive + ", ispinned=" + ispinned
+				+ ", intrash=" + intrash + ", userId=" + userId + "]";
 	}
 
 }

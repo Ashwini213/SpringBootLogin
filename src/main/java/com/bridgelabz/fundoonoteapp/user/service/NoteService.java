@@ -11,7 +11,7 @@ public interface NoteService {
 
 	Note createNote(String header, Note note);
 
-	boolean deleteNote(String token, Note note);
+//	public String deleteNote(int noteId,String token);
 
 	List<Note> getNotes(String header);
 
@@ -22,5 +22,9 @@ public interface NoteService {
 	boolean deleteLabel(String token, Label lable);
 
 	List<Label> getLabels(String token);
+
+	String deleteNote(String token, Note note);
+
+//	boolean deleteNote(String token, Note note);
 	
 }
