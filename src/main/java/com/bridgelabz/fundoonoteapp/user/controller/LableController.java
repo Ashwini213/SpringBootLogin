@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import com.bridgelabz.fundoonoteapp.user.service.CustomException;
 import com.bridgelabz.fundoonoteapp.user.service.NoteService;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class LableController {
 	@Autowired
 	private NoteService noteService;
@@ -43,7 +45,7 @@ public class LableController {
 	@DeleteMapping(value = "/label")
 	public void deleteLabel(@RequestBody Label label, HttpServletRequest request) {
 		System.out.println("I am token at delete method :" + request.getHeader("token"));
-	
+
 	}
 
 	// fetch

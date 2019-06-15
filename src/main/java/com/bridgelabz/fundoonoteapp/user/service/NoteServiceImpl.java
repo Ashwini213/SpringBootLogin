@@ -1,15 +1,19 @@
 package com.bridgelabz.fundoonoteapp.user.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.bridgelabz.fundoonoteapp.user.model.Collaborator;
 import com.bridgelabz.fundoonoteapp.user.model.Label;
 import com.bridgelabz.fundoonoteapp.user.model.Note;
+import com.bridgelabz.fundoonoteapp.user.repository.CollaboratorRepo;
 import com.bridgelabz.fundoonoteapp.user.repository.LabelRepository;
 import com.bridgelabz.fundoonoteapp.user.repository.NoteRepository;
 import com.bridgelabz.fundoonoteapp.util.Util;
@@ -22,7 +26,8 @@ public class NoteServiceImpl implements NoteService {
 	public NoteRepository noteRep;
 	@Autowired
 	public LabelRepository labelRepository;
-
+	@Autowired
+public CollaboratorRepo collaboratorRepo;
 	@Override
 	public Note createNote(String token, Note note) {
 		// System.out.println("note creation :" + Util.tokenVerification(token));
@@ -41,6 +46,7 @@ public class NoteServiceImpl implements NoteService {
 	@Override
 	public Note updateNote(String token, Note note) {
 		// int verifiedUserId = JsonUtil.tokenVerification(token);
+		System.out.println(note);
 		System.out.println("varifiedUserId :" + Util.tokenVerification(token));
 		Optional<Note> maybeNote = noteRep.findByUserIdAndNoteId(Util.tokenVerification(token), note.getNoteId());
 		System.out.println("maybeNote :" + maybeNote);
@@ -49,16 +55,22 @@ public class NoteServiceImpl implements NoteService {
 			existingNote.setDiscription(
 					note.getDiscription() != null ? note.getDiscription() : maybeNote.get().getDiscription());
 			existingNote.setTitle(note.getTitle() != null ? note.getTitle() : maybeNote.get().getTitle());
+			existingNote.setIntrash(note.isIntrash());
+			existingNote.setIsarchive(note.isIsarchive());
+			existingNote.setIspinned(note.isIspinned());
+			
 			return existingNote;
 		}).orElseThrow(() -> new RuntimeException("Note Not Found"));
+		System.out.println(presentNote);
 
 		return noteRep.save(presentNote);
 	}
 
 	@Override
-	public String deleteNote(String token, Note note) {
+	public String deleteNote( int noteId) {
 		// int verifiedUserId = JsonUtil.tokenVerification(token);
-		noteRep.deleteByUserIdAndNoteId(Util.tokenVerification(token), note.getNoteId());
+		//noteRep.deleteByUserIdAndNoteId(Util.tokenVerification(token), noteId);
+		noteRep.deleteByNoteId(noteId);
 		return "Deleted";
 	}
 
@@ -68,11 +80,26 @@ public class NoteServiceImpl implements NoteService {
 	 * noteRep.findByNoteIdAndUserId(noteId, userId);
 	 * noteRep.delete(noteInfo.get(0)); return "Deleted"; }
 	 */
-	@Override
+	/*@Override
 	public List<Note> getNotes(String token) {
 
 		return noteRep.findByUserId(Util.tokenVerification(token));
 
+	}*/
+	@Override
+	public List<Note> getNotes(String token,HttpServletRequest request) {
+		int userId=Util.tokenVerification(token);
+		List<Note> notes=new ArrayList<Note>();
+		List<Collaborator> collaborators=collaboratorRepo.findAllByOwnerId(userId);
+		collaborators.forEach(collaborator ->{
+		
+//			notes.add(noteRep.findByUserId(collaborator.getNoteId().get();
+			notes.add(noteRep.findByNoteId(collaborator.getNoteId()).get());
+		});
+		List<Note> newNotes = noteRep.findAllNoteByUserId(userId);
+		
+		notes.addAll(newNotes);
+		return notes;
 	}
 
 	@Override
@@ -117,6 +144,7 @@ public class NoteServiceImpl implements NoteService {
 		return lable;
 	}
 
+	
 	
 
 	

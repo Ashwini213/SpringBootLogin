@@ -25,4 +25,8 @@ public interface UserService {
 
 	public List<User> getDetails();
 
+	public List<String> getAllUser(String token);
+
+	public User getCoUserEmailId(int coUserId);
+
 }

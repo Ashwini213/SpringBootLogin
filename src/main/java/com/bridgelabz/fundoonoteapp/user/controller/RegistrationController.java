@@ -22,11 +22,12 @@ public class RegistrationController {
 
 	@Autowired
 	private UserService userService;
-	
+
 	@PostMapping(value = "/registration")
-	public ResponseEntity<String> createUser(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<String> createUser(@RequestBody User user, HttpServletRequest request,
+			HttpServletResponse response) {
 
 		User newUser = userService.userRegistration(user, request);
-	return new ResponseEntity<>("{Registration Succesfull}", HttpStatus.OK);
+		return new ResponseEntity<>("{Registration Succesfull}", HttpStatus.OK);
 	}
 }

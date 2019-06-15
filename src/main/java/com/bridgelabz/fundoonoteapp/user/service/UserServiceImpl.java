@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoonoteapp.user.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,8 +14,10 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import com.bridgelabz.fundoonoteapp.user.model.Collaborator;
 import com.bridgelabz.fundoonoteapp.user.model.LoginRequest;
 import com.bridgelabz.fundoonoteapp.user.model.User;
+import com.bridgelabz.fundoonoteapp.user.repository.CollaboratorRepo;
 import com.bridgelabz.fundoonoteapp.user.repository.UserRepository;
 import com.bridgelabz.fundoonoteapp.util.Util;
 
@@ -23,6 +26,9 @@ import com.bridgelabz.fundoonoteapp.util.Util;
 public class UserServiceImpl implements UserService {
 	@Autowired
 	public UserRepository userRep;
+	
+	@Autowired
+	private CollaboratorRepo colRepo;
 
 	@Autowired
 	private JavaMailSender mailSender;
@@ -34,8 +40,8 @@ public class UserServiceImpl implements UserService {
 	public String login(LoginRequest login) {
 		String password = Util.encryptedPassword(login.getPassword());
 		Optional<User> userList = userRep.findByEmailAndPassword(login.getEmail(), password);
-System.out.println(userList);
-	if (userList.isPresent()) {
+		System.out.println(userList);
+		if (userList.isPresent()) {
 			System.out.println("Sucessful login");
 			return Util.jwtToken(password, userList.get().getId());
 		} else
@@ -133,6 +139,23 @@ System.out.println(userList);
 	public List<User> getDetails() {
 		List<User> users = userRep.findAll();
 		return users;
+	}
+
+	@Override
+	public List<String> getAllUser(String token) {
+		int userId=Util.tokenVerification(token);
+		List<Collaborator> users = colRepo.findAllByOwnerId(userId);
+		List<String> emailIds= new ArrayList<>();
+		users.forEach(collaborator ->
+		{
+			emailIds.add((userRep.findById(collaborator.getAllocatedId())).get().getEmail());
+		});
+		return emailIds;
+	}
+
+	@Override
+	public User getCoUserEmailId(int coUserId) {
+		return userRep.findById(coUserId).get();
 	}
 
 }

@@ -8,16 +8,21 @@ import org.springframework.stereotype.Repository;
 
 import com.bridgelabz.fundoonoteapp.user.model.Note;
 
-
 @Repository
 public interface NoteRepository extends JpaRepository<Note, Long> {
 
-	Optional<Note> findByUserIdAndNoteId(int varifiedUserId, int noteid);
-	public List<Note> findByNoteIdAndUserId(int noteId,int userId);
+	Optional<Note> findByUserIdAndNoteId(int varifiedUserId, int noteId);
 
+	public List<Note> findByNoteIdAndUserId(int noteId, int userId);
 
 	void deleteByUserIdAndNoteId(int varifiedUserId, int noteId);
 
-	List<Note> findByUserId(int varifiedUserId);
+	 Optional<Note> findByNoteId(int varifiedUserId);
+
+	void deleteByNoteId(int noteId);
+
+	// List<Note> findAllNoteById(int noteId);
+	List<Note> findAllNoteByUserId(int userId);
+
 
 }

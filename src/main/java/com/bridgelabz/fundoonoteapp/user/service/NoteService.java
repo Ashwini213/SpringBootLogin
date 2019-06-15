@@ -2,6 +2,8 @@ package com.bridgelabz.fundoonoteapp.user.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.bridgelabz.fundoonoteapp.user.model.Label;
 import com.bridgelabz.fundoonoteapp.user.model.Note;
 
@@ -11,9 +13,9 @@ public interface NoteService {
 
 	Note createNote(String header, Note note);
 
-//	public String deleteNote(int noteId,String token);
+	// public String deleteNote(int noteId,String token);
 
-	List<Note> getNotes(String header);
+	// List<Note> getNotes(String header);
 
 	Label createLabel(String header, Label lable);
 
@@ -23,8 +25,12 @@ public interface NoteService {
 
 	List<Label> getLabels(String token);
 
-	String deleteNote(String token, Note note);
+	String deleteNote(int noteId);
 
-//	boolean deleteNote(String token, Note note);
-	
+	// List<Note> retrieveNote(String token, HttpServletRequest request);
+
+	List<Note> getNotes(String token, HttpServletRequest request);
+
+	// boolean deleteNote(String token, Note note);
+
 }

@@ -42,33 +42,35 @@ public class NoteController {
 	@PutMapping(value = "/note/{token}")
 	// @RequestMapping(value = "/updateNote", method = RequestMethod.PUT)
 	public Note updateNote(@PathVariable String token, @RequestBody Note note, HttpServletRequest request) {
-
-		return noteService.updateNote(token, note);     //request.getHeader("token"), note);
+		System.out.println("updating" + note.getNoteId());
+		return noteService.updateNote(token, note); // request.getHeader("token"), note);
 	}
 
 	// delete
-	@DeleteMapping(value = "/note/{token}")
+	@DeleteMapping(value = "note/{noteId}")
 	// @RequestMapping(value = "/deleteNote", method = RequestMethod.DELETE)
-	public String deleteNote(@PathVariable String token, @RequestBody Note note, HttpServletRequest request) {
+	public String deleteNote(@PathVariable int noteId, HttpServletRequest request) {
 		System.out.println("I am token at delete method :" + request.getHeader("token"));
 		// boolean deleteNote = noteService.deleteNote(request.getHeader("token"),
-		return noteService.deleteNote(token, note);
+		return noteService.deleteNote(noteId);
 		// note);
 
 	}
-	/*@DeleteMapping(value = "/delete/{noteId}")
-	public String noteDelete(@PathVariable int noteId, HttpServletRequest request) {
-		String token = request.getHeader("token");
-		return noteService.deleteNote(noteId,token);
 
-	}
-*/
+	/*
+	 * @DeleteMapping(value = "/delete/{noteId}") public String
+	 * noteDelete(@PathVariable int noteId, HttpServletRequest request) { String
+	 * token = request.getHeader("token"); return
+	 * noteService.deleteNote(noteId,token);
+	 * 
+	 * }
+	 */
 	// fetch
 	@GetMapping(value = "/notes/{token}")
 	// @RequestMapping(value = "/fetchNote", method = RequestMethod.GET)
-	public List<Note> getNotes(@PathVariable String token, HttpServletRequest request) {
+	public List<Note> getNotes(@PathVariable String token, HttpServletRequest request ) {
 		System.out.println("I am token at get method :" + request.getHeader("token"));
-		return noteService.getNotes(token);  //request.getHeader("token"));
+		return noteService.getNotes(token, request); // request.getHeader("token"));
 
 	}
 

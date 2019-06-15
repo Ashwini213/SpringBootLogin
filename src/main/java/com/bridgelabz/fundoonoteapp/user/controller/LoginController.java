@@ -16,10 +16,13 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.fundoonoteapp.user.model.LoginRequest;
@@ -27,6 +30,7 @@ import com.bridgelabz.fundoonoteapp.user.model.User;
 import com.bridgelabz.fundoonoteapp.user.service.CustomException;
 import com.bridgelabz.fundoonoteapp.user.service.UserService;
 import com.bridgelabz.fundoonoteapp.util.Util;
+
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/")
 @RestController
@@ -57,21 +61,20 @@ public class LoginController {
 
 	@PostMapping(value = "/login")
 	// @RequestMapping(value = "/login", method = RequestMethod.POST)
-	public ResponseEntity<String>Login(@RequestBody LoginRequest Login, HttpServletRequest request, HttpServletResponse response) {
-	
-		String token=userService.login(Login);
-		
-		if(token!=null) {
-			System.out.println("hmmm->"+token);
+	public ResponseEntity<String> Login(@RequestBody LoginRequest Login, HttpServletRequest request,
+			HttpServletResponse response) {
+
+		String token = userService.login(Login);
+
+		if (token != null) {
+			System.out.println("hmmm->" + token);
 			response.setHeader("token", token);
 			response.addHeader("Access-control-Allow-Headers", "*");
 			response.addHeader("Access-control-Expose-Headers", "*");
 
-			
 			return new ResponseEntity<>(HttpStatus.OK);
-		}
-		else
-			return new ResponseEntity<String>("inavlid details",HttpStatus.BAD_REQUEST);
+		} else
+			return new ResponseEntity<String>("inavlid details", HttpStatus.BAD_REQUEST);
 	}
 
 	@PutMapping(value = "/user")
@@ -79,11 +82,10 @@ public class LoginController {
 	public ResponseEntity<User> updateUser(@RequestBody User user, HttpServletRequest request) throws CustomException {
 		System.out.println("I am  token at update method :" + request.getHeader("token"));
 		User result = userService.update(request.getHeader("token"), user);
-		 if(result!=null) {
-			 return new ResponseEntity<User>(result,HttpStatus.OK);
-		 }
-		 else
-			 return new ResponseEntity<User>(HttpStatus.NOT_MODIFIED);
+		if (result != null) {
+			return new ResponseEntity<User>(result, HttpStatus.OK);
+		} else
+			return new ResponseEntity<User>(HttpStatus.NOT_MODIFIED);
 	}
 
 	@DeleteMapping(value = "/user")
@@ -175,4 +177,37 @@ public class LoginController {
 
 		return userService.getDetails();
 	}
+
+	@GetMapping("/get-all-user/{token}")
+	public ResponseEntity<?> getAllUser(@PathVariable("token") String token, HttpServletRequest request,
+			HttpServletResponse resp) {
+		List<String> emailIds = userService.getAllUser(token);
+		if (emailIds != null)
+			return new ResponseEntity<List<String>>(emailIds, HttpStatus.OK);
+		else
+			return new ResponseEntity<String>("Went wrong", HttpStatus.CONFLICT);
+	}
+
+	@GetMapping("/get-coll-user/{emaiId}")
+	public ResponseEntity<?> getCollabUser(@PathVariable("emaiId") String emaiId, @RequestHeader("token") String token,
+			HttpServletRequest request, HttpServletResponse resp) {
+		User coUser = userService.getUserByEmail(emaiId);
+		if (coUser != null)
+			return new ResponseEntity<User>(coUser, HttpStatus.OK);
+		else
+			return new ResponseEntity<String>("Went wrong", HttpStatus.CONFLICT);
+	}
+
+	@GetMapping("/get-user-email/{token}")
+	public ResponseEntity<?> getCoUser(@PathVariable("token") String token, @RequestParam("coUserId") int coUserId,
+			HttpServletRequest request, HttpServletResponse resp) {
+		if (token != null) {
+			User loggedInUser = userService.getCoUserEmailId(coUserId);
+			if (loggedInUser != null) {
+				return new ResponseEntity<User>(loggedInUser, HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<String>("Went wrong", HttpStatus.CONFLICT);
+	}
+
 }
