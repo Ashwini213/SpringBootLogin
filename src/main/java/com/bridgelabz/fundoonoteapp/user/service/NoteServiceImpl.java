@@ -27,7 +27,8 @@ public class NoteServiceImpl implements NoteService {
 	@Autowired
 	public LabelRepository labelRepository;
 	@Autowired
-public CollaboratorRepo collaboratorRepo;
+	public CollaboratorRepo collaboratorRepo;
+
 	@Override
 	public Note createNote(String token, Note note) {
 		// System.out.println("note creation :" + Util.tokenVerification(token));
@@ -58,7 +59,7 @@ public CollaboratorRepo collaboratorRepo;
 			existingNote.setIntrash(note.isIntrash());
 			existingNote.setIsarchive(note.isIsarchive());
 			existingNote.setIspinned(note.isIspinned());
-			
+
 			return existingNote;
 		}).orElseThrow(() -> new RuntimeException("Note Not Found"));
 		System.out.println(presentNote);
@@ -67,9 +68,9 @@ public CollaboratorRepo collaboratorRepo;
 	}
 
 	@Override
-	public String deleteNote( int noteId) {
+	public String deleteNote(int noteId) {
 		// int verifiedUserId = JsonUtil.tokenVerification(token);
-		//noteRep.deleteByUserIdAndNoteId(Util.tokenVerification(token), noteId);
+		// noteRep.deleteByUserIdAndNoteId(Util.tokenVerification(token), noteId);
 		noteRep.deleteByNoteId(noteId);
 		return "Deleted";
 	}
@@ -80,24 +81,25 @@ public CollaboratorRepo collaboratorRepo;
 	 * noteRep.findByNoteIdAndUserId(noteId, userId);
 	 * noteRep.delete(noteInfo.get(0)); return "Deleted"; }
 	 */
-	/*@Override
-	public List<Note> getNotes(String token) {
-
-		return noteRep.findByUserId(Util.tokenVerification(token));
-
-	}*/
+	/*
+	 * @Override public List<Note> getNotes(String token) {
+	 * 
+	 * return noteRep.findByUserId(Util.tokenVerification(token));
+	 * 
+	 * }
+	 */
 	@Override
-	public List<Note> getNotes(String token,HttpServletRequest request) {
-		int userId=Util.tokenVerification(token);
-		List<Note> notes=new ArrayList<Note>();
-		List<Collaborator> collaborators=collaboratorRepo.findAllByOwnerId(userId);
-		collaborators.forEach(collaborator ->{
-		
-//			notes.add(noteRep.findByUserId(collaborator.getNoteId().get();
+	public List<Note> getNotes(String token, HttpServletRequest request) {
+		int userId = Util.tokenVerification(token);
+		List<Note> notes = new ArrayList<Note>();
+		List<Collaborator> collaborators = collaboratorRepo.findAllByOwnerId(userId);
+		collaborators.forEach(collaborator -> {
+
+			// notes.add(noteRep.findByUserId(collaborator.getNoteId().get();
 			notes.add(noteRep.findByNoteId(collaborator.getNoteId()).get());
 		});
 		List<Note> newNotes = noteRep.findAllNoteByUserId(userId);
-		
+
 		notes.addAll(newNotes);
 		return notes;
 	}
@@ -143,10 +145,5 @@ public CollaboratorRepo collaboratorRepo;
 
 		return lable;
 	}
-
-	
-	
-
-	
 
 }

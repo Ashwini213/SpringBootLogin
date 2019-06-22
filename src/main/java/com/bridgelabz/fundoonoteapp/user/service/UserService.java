@@ -29,4 +29,6 @@ public interface UserService {
 
 	public User getCoUserEmailId(int coUserId);
 
+	public List<String> getEmails();
+
 }

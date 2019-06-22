@@ -32,7 +32,6 @@ public class NoteController {
 
 	// Create
 	@PostMapping(value = "/note/{token}")
-	// @RequestMapping(value = "/createNote", method = RequestMethod.POST)
 	public Note createNote(@PathVariable String token, @RequestBody Note note, HttpServletRequest request) {
 
 		return noteService.createNote(token, note);// request.getHeader("token"), note);
@@ -68,7 +67,7 @@ public class NoteController {
 	// fetch
 	@GetMapping(value = "/notes/{token}")
 	// @RequestMapping(value = "/fetchNote", method = RequestMethod.GET)
-	public List<Note> getNotes(@PathVariable String token, HttpServletRequest request ) {
+	public List<Note> getNotes(@PathVariable String token, HttpServletRequest request) {
 		System.out.println("I am token at get method :" + request.getHeader("token"));
 		return noteService.getNotes(token, request); // request.getHeader("token"));
 

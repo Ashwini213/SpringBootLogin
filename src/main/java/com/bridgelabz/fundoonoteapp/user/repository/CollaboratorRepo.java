@@ -12,13 +12,14 @@ import com.bridgelabz.fundoonoteapp.user.model.Collaborator;
 public interface CollaboratorRepo extends JpaRepository<Collaborator, Integer> {
 
 	List<Collaborator> findByNoteId(int noteId);
-//	@Query()
+
+	// @Query()
 	List<Collaborator> findAllByOwnerId(int userId);
 
 	@Query("select u.id from User u where u.email = :email")
 	int findIdByEmail(String email);
-	
-//	 @Query("select c.allocated_id from collaborator c where c.owner_id = ?1")
-//	 List<Collaborator> findAllByOwnerId(int ownerid);
+
+	// @Query("SELECT emailId FROM User p WHERE p.emailId!=null")
+	// public List<String> find();
 
 }

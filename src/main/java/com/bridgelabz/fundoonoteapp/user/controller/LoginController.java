@@ -41,6 +41,7 @@ public class LoginController {
 	@Autowired
 	private JavaMailSender mailSender;
 
+
 	// SEND EMAIL
 	@RequestMapping("/sendMail")
 	public String sendMail(@RequestBody User user) {
@@ -192,9 +193,11 @@ public class LoginController {
 	public ResponseEntity<?> getCollabUser(@PathVariable("emaiId") String emaiId, @RequestHeader("token") String token,
 			HttpServletRequest request, HttpServletResponse resp) {
 		User coUser = userService.getUserByEmail(emaiId);
-		if (coUser != null)
+		if (coUser != null) {
+			System.out.println(coUser);
+
 			return new ResponseEntity<User>(coUser, HttpStatus.OK);
-		else
+		} else
 			return new ResponseEntity<String>("Went wrong", HttpStatus.CONFLICT);
 	}
 
@@ -210,4 +213,9 @@ public class LoginController {
 		return new ResponseEntity<String>("Went wrong", HttpStatus.CONFLICT);
 	}
 
+//	@GetMapping("/getemails")
+//	public List<String> getEmails() {
+//
+//		return userService.getEmails();
+//	}
 }

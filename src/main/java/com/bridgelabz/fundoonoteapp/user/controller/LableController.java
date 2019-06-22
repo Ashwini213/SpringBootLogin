@@ -20,10 +20,10 @@ import com.bridgelabz.fundoonoteapp.user.service.NoteService;
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class LableController {
+	
 	@Autowired
 	private NoteService noteService;
 
-	// Create
 	// @RequestMapping(value = "/createlable", method = RequestMethod.POST)
 	@PostMapping(value = "/label")
 	public Label createLabel(@RequestBody Label label, HttpServletRequest request) {

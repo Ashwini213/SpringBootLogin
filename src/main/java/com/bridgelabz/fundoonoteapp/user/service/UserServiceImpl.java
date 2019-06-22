@@ -24,9 +24,10 @@ import com.bridgelabz.fundoonoteapp.util.Util;
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
+	
 	@Autowired
 	public UserRepository userRep;
-	
+
 	@Autowired
 	private CollaboratorRepo colRepo;
 
@@ -109,7 +110,6 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getUserByEmail(String email) {
 		return userRep.findByEmail(email);
-
 	}
 
 	public String sendMail(User user, String urlPattern, String subject) {
@@ -143,11 +143,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<String> getAllUser(String token) {
-		int userId=Util.tokenVerification(token);
+		int userId = Util.tokenVerification(token);
 		List<Collaborator> users = colRepo.findAllByOwnerId(userId);
-		List<String> emailIds= new ArrayList<>();
-		users.forEach(collaborator ->
-		{
+		List<String> emailIds = new ArrayList<>();
+		users.forEach(collaborator -> {
 			emailIds.add((userRep.findById(collaborator.getAllocatedId())).get().getEmail());
 		});
 		return emailIds;
@@ -156,6 +155,15 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User getCoUserEmailId(int coUserId) {
 		return userRep.findById(coUserId).get();
+	}
+
+	@Override
+	public List<String> getEmails() {
+
+		List<User> list = userRep.findAll();
+		List<String> listOfEmails = new ArrayList<>();
+		list.forEach(obj -> listOfEmails.add(obj.getEmail()));
+		return listOfEmails;
 	}
 
 }
