@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.fundoonoteapp.user.model.Collaborator;
-import com.bridgelabz.fundoonoteapp.user.model.User;
 import com.bridgelabz.fundoonoteapp.user.repository.CollaboratorRepo;
 import com.bridgelabz.fundoonoteapp.util.Util;
 

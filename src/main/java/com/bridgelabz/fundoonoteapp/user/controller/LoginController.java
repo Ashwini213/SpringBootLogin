@@ -41,7 +41,6 @@ public class LoginController {
 	@Autowired
 	private JavaMailSender mailSender;
 
-
 	// SEND EMAIL
 	@RequestMapping("/sendMail")
 	public String sendMail(@RequestBody User user) {
